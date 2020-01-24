@@ -35,8 +35,18 @@ func (e *EllucianAPIService) GetSubjects(request request.SubjectsRequestModel) {
 }
 
 // GetCourses returns a list of all courses within the specified department/subject
-func (e *EllucianAPIService) GetCourses(request request.CoursesRequestModel) {
-
+func (e *EllucianAPIService) GetCourses(request request.CoursesRequestModel) []entity.Course {
+	res := make([]entity.Course, 0)
+	dom, err := getDocumentModel(request.College, EllucianRegistrationCoursesRelativePath, EllucianRegistrationSubjectsRelativePath, request.Term, request.Subject, "", nil, e.collector)
+	if err != nil {
+		log.Errorf("Error getting document model: %s", err.Error())
+	}
+	elems := dom.Find(formatSelectorForAttribute(EllucianDataClassKey, EllucianDataClassValueCourses))
+	elems.Each(func(_ int, s *goquery.Selection) {
+		course := parseCourseFromCourseInfo(s.Text())
+		res = append(res, course)
+	})
+	return res
 }
 
 // GetSections returns a list of all sections and meeting times for a specific course
@@ -47,23 +57,22 @@ func (e *EllucianAPIService) GetSections(request request.SectionsRequestModel) [
 		log.Errorf("Error getting document model: %s", err.Error())
 	}
 	courses := make([]entity.Course, 0)
-	attrQueryCourses := formatSelectorForAttribute(EllucianDataClassKey, EllucianDataClassValueCourses)
-	elemsCourses := dom.Find(attrQueryCourses)
-	elemsCourses.Each(func(i int, s *goquery.Selection) {
-		courseInfo := s.Text()
-		courses = append(courses, parseCourseFromCourseInfo(courseInfo))
+	elemsCourses := dom.Find(formatSelectorForAttribute(EllucianDataClassKey, EllucianDataClassValueCourses))
+	elemsCourses.Each(func(_ int, s *goquery.Selection) {
+		course := parseCourseFromCourseInfo(s.Text())
+		courses = append(courses, course)
 	})
 	attrQueryMeetings := formatSelectorForAttribute(EllucianDataClassTableKey, EllucianDataClassTableValueSections)
 	// log.Infof("attrQuery: %s", attrQueryMeetings)
 	elemsMeetings := dom.Find(attrQueryMeetings)
 	// log.Info("HERE")
 	currentIndex := 0
-	elemsMeetings.Each(func(i int, s *goquery.Selection) {
+	elemsMeetings.Each(func(_ int, s *goquery.Selection) {
 		sectionMeetings := make([]entity.SectionMeeting, 0)
 		// html, err := s.Html()
 		tableRows := s.Find(EllucianDataClassTableRowTag)
 		tableRowCount := 0
-		tableRows.Each(func(i int, row *goquery.Selection) {
+		tableRows.Each(func(_ int, row *goquery.Selection) {
 			if tableRowCount > 0 {
 				sectionMeetings = append(sectionMeetings, parseScheduledMeetingFromTableRow(row))
 			}
