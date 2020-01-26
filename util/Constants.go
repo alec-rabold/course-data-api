@@ -3,6 +3,7 @@ package util
 // Global constants for EllucianDataLambda
 const (
 	/* API Paths */
+	APIPathColleges string = "/v1/colleges"
 	APIPathTerms    string = "/v1/terms"
 	APIPathSubjects string = "/v1/subjects"
 	APIPathCourses  string = "/v1/courses"
@@ -53,6 +54,20 @@ const (
 	EllucianDataGeorgiaTech                     string = "https://oscar.gatech.edu/pls/bprod"
 )
 
+// EllucianSupportedColleges is a list of all supported Ellucian colleges
+var EllucianSupportedColleges = map[string]string{
+	BrownUniversity:                "Brown University",
+	DrexelUniversity:               "Drexel University",
+	GeorgeMasonUniversity:          "George Mason University",
+	GeorgiaStateUniversity:         "Georgia State University",
+	GeorgiaTech:                    "Georgia Tech",
+	HarperCollege:                  "Harper College",
+	PurdueUniversity:               "Purdue University",
+	PurdueUniversityNorthwest:      "Purdue University Northwest",
+	UniversityOfTennesseeKnoxville: "University of Tennessee Knoxville",
+	WeberStateUniversity:           "Weber State University",
+}
+
 // EllucianUniversitiesDataPages maps university names to their respective Ellucian data pages
 var EllucianUniversitiesDataPages = map[string]string{
 	GeorgiaStateUniversity:         EllucianDataGeorgiaStateUniversity,
@@ -66,3 +81,6 @@ var EllucianUniversitiesDataPages = map[string]string{
 	BrownUniversity:                EllucianDataBrownUniversity,
 	GeorgiaTech:                    EllucianDataGeorgiaTech,
 }
+
+// InvalidTerms are terms that should be ingored when parsing
+var InvalidTerms = []string{"(", ")", "None", "Language", "Continuing"}

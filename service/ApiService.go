@@ -11,9 +11,10 @@ import (
 
 // APIService defines the available api operations
 type APIService interface {
-	GetTerms(request.TermsRequestModel)
-	GetSubjects(request.SubjectsRequestModel)
-	GetCourses(request.CoursesRequestModel)
+	GetColleges() []entity.College
+	GetTerms(request.TermsRequestModel) []entity.Term
+	GetSubjects(request.SubjectsRequestModel) []entity.Subject
+	GetCourses(request.CoursesRequestModel) []entity.Course
 	GetSections(request.SectionsRequestModel) []entity.Section
 }
 

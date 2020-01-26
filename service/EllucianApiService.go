@@ -8,7 +8,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly"
 	log "github.com/sirupsen/logrus"
-	"os"
+	"regexp"
 	"strings"
 )
 
@@ -24,14 +24,65 @@ func NewEllucianAPIService() *EllucianAPIService {
 	}
 }
 
-// GetTerms returns a list of all academic terms and respective term codes
-func (e *EllucianAPIService) GetTerms(request request.TermsRequestModel) {
+// GetColleges returns a list of all supported colleges to be used for this API
+func (e *EllucianAPIService) GetColleges() []entity.College {
+	res := make([]entity.College, 0)
+	for key, value := range EllucianSupportedColleges {
+		res = append(res, entity.College{
+			NameAbbr: key,
+			NameFull: value,
+		})
+	}
+	return res
+}
 
+// GetTerms returns a list of all academic terms and respective term codes
+func (e *EllucianAPIService) GetTerms(request request.TermsRequestModel) []entity.Term {
+	res := make([]entity.Term, 0)
+	dom, err := getDocumentModel(request.College, EllucianRegistrationTermsRelativePath, EllucianRegistrationTermsRelativePath, "", "", "", nil, e.collector)
+	if err != nil {
+		log.Errorf("Error getting document model: %s", err.Error())
+	}
+	elems := dom.Find(formatSelectorForAttribute(EllucianDataNameKey, EllucianDataNameValueTerms))
+	children := getSingularElement(elems).Children()
+	children.Each(func(_ int, s *goquery.Selection) {
+		term := sanitizeTerm(s.Text())
+		season := parseNameFromTerm(term)
+		year := parseYearFromTerm(term)
+		ID, _ := s.Attr("value")
+		if !containsAnyFromSlice(term, InvalidTerms) {
+			res = append(res, entity.Term{
+				Season:   season,
+				Year:     year,
+				TermCode: ID,
+			})
+		}
+	})
+	return res
 }
 
 // GetSubjects returns a list of all departments / subjects offered for a specific term
-func (e *EllucianAPIService) GetSubjects(request request.SubjectsRequestModel) {
-
+func (e *EllucianAPIService) GetSubjects(request request.SubjectsRequestModel) []entity.Subject {
+	res := make([]entity.Subject, 0)
+	callingData := map[string]string{
+		"p_calling_proc": "bwckschd.p_disp_dyn_sched",
+		"p_term":         request.Term,
+	}
+	// dom := getDocumentModel()
+	dom, err := getDocumentModel(request.College, EllucianRegistrationSubjectsRelativePath, EllucianRegistrationTermsRelativePath, "", "", "", callingData, e.collector)
+	if err != nil {
+		log.Errorf("Error getting document model: %s", err.Error())
+	}
+	elems := dom.Find(formatSelectorForAttribute(EllucianDataNameKey, EllucianDataNameValueSubjects))
+	children := getSingularElement(elems).Children()
+	children.Each(func(_ int, s *goquery.Selection) {
+		abbrev, _ := s.Attr("value")
+		res = append(res, entity.Subject{
+			Abbreviation: abbrev,
+			CompleteName: s.Text(),
+		})
+	})
+	return res
 }
 
 // GetCourses returns a list of all courses within the specified department/subject
@@ -63,13 +114,10 @@ func (e *EllucianAPIService) GetSections(request request.SectionsRequestModel) [
 		courses = append(courses, course)
 	})
 	attrQueryMeetings := formatSelectorForAttribute(EllucianDataClassTableKey, EllucianDataClassTableValueSections)
-	// log.Infof("attrQuery: %s", attrQueryMeetings)
 	elemsMeetings := dom.Find(attrQueryMeetings)
-	// log.Info("HERE")
 	currentIndex := 0
 	elemsMeetings.Each(func(_ int, s *goquery.Selection) {
 		sectionMeetings := make([]entity.SectionMeeting, 0)
-		// html, err := s.Html()
 		tableRows := s.Find(EllucianDataClassTableRowTag)
 		tableRowCount := 0
 		tableRows.Each(func(_ int, row *goquery.Selection) {
@@ -91,23 +139,10 @@ func (e *EllucianAPIService) GetSections(request request.SectionsRequestModel) [
 	return res
 }
 
-func getDocumentModel(collegeName, relativePath, referrerPath, term, subject, courseNumber string, entries []string, collector *colly.Collector) (*goquery.Document, error) {
+func getDocumentModel(collegeName, relativePath, referrerPath, term, subject, courseNumber string, entries map[string]string, collector *colly.Collector) (*goquery.Document, error) {
 	log.Debug("GetDocumentMode()")
 	basePage := EllucianUniversitiesDataPages[collegeName]
 	dataURL := basePage + relativePath
-	// e.collector.OnRequest(func(r *colly.Request) {
-	// 	r.Headers.Set("Referer", basePage+referrerPath)
-	// })
-	log.Debug("URL: " + dataURL)
-	unencodedData := EllucianCourseDataFormDataDefault + term + EllucianDataFormSubject + subject
-	// Add course number to payload if desired
-	if len(courseNumber) != 0 {
-		unencodedData += (EllucianDataFormCourse + courseNumber)
-	} else {
-		unencodedData += (EllucianDataFormCourse + "")
-	}
-	log.Debug("payload: " + unencodedData)
-	payload := []byte(unencodedData)
 
 	var err error
 	var dom *goquery.Document
@@ -117,8 +152,24 @@ func getDocumentModel(collegeName, relativePath, referrerPath, term, subject, co
 			log.Errorf("Error creating dom from html: %s", err.Error())
 		}
 	})
+	collector.OnRequest(func(r *colly.Request) {
+		r.Headers.Set("Referer", basePage+referrerPath) // CORS spoof
+	})
 
-	err = collector.PostRaw(dataURL, payload)
+	if len(entries) > 0 || len(term) == 0 {
+		err = collector.Post(dataURL, entries)
+	} else {
+		unencodedData := EllucianCourseDataFormDataDefault + term + EllucianDataFormSubject + subject
+		// Add course number to payload if desired
+		if len(courseNumber) != 0 {
+			unencodedData += (EllucianDataFormCourse + courseNumber)
+		} else {
+			unencodedData += (EllucianDataFormCourse + "")
+		}
+		log.Debug("payload: " + unencodedData)
+		payload := []byte(unencodedData)
+		err = collector.PostRaw(dataURL, payload)
+	}
 	if err != nil {
 		log.Errorf("Error posting data to request: %s", err.Error())
 		return nil, err
@@ -138,12 +189,6 @@ func defaultCollector() *colly.Collector {
 	c.OnResponse(func(r *colly.Response) {
 		log.Debug("OnResponse() called")
 		log.Debug("reponse: \n============\n", string(r.Body))
-		f, err := os.Create("output.html")
-		if err != nil {
-			log.Errorf("Error opening file: %s", err.Error())
-		}
-		f.Write(r.Body)
-		f.Close()
 	})
 
 	c.OnError(func(_ *colly.Response, err error) {
@@ -155,6 +200,39 @@ func defaultCollector() *colly.Collector {
 func formatSelectorForAttribute(key, value string) string {
 	return "*[" + key + "=" + "\"" + value + "\"" + "]"
 
+}
+
+func getSingularElement(elems *goquery.Selection) *goquery.Selection {
+	res := elems.First()
+	elems.Each(func(_ int, elem *goquery.Selection) {
+		val, _ := elem.Attr("value")
+		if !strings.EqualFold(val, EllucianDataDummyNode) {
+			res = elem
+			return
+		}
+	})
+	return res
+}
+
+func sanitizeTerm(term string) string {
+	return strings.Replace(term, "(View only)", "", -1)
+}
+
+func parseNameFromTerm(term string) string {
+	if caseInsensitiveContains(term, "Fall") {
+		return "Fall"
+	} else if caseInsensitiveContains(term, "Winter") {
+		return "Winter"
+	} else if caseInsensitiveContains(term, "Spring") {
+		return "Spring"
+	} else if caseInsensitiveContains(term, "Summer") {
+		return "Summer"
+	}
+	return ""
+}
+
+func parseYearFromTerm(term string) string {
+	return strings.TrimSpace(regexp.MustCompile("[^0-9\\s]").ReplaceAllString(term, ""))
 }
 
 func parseScheduledMeetingFromTableRow(row *goquery.Selection) entity.SectionMeeting {
@@ -192,4 +270,18 @@ func parseCourseFromCourseInfo(courseInfo string) entity.Course {
 	}
 	log.Errorf("Error formatting: %s", courseInfo)
 	return entity.Course{}
+}
+
+func caseInsensitiveContains(s, substr string) bool {
+	s, substr = strings.ToUpper(s), strings.ToUpper(substr)
+	return strings.Contains(s, substr)
+}
+
+func containsAnyFromSlice(e string, s []string) bool {
+	for _, a := range s {
+		if caseInsensitiveContains(a, e) {
+			return true
+		}
+	}
+	return false
 }
