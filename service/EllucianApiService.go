@@ -1,11 +1,10 @@
 package service
 
 import (
+	"github.com/PuerkitoBio/goquery"
 	"github.com/alec-rabold/EllucianBannerApi-go/model/entity"
 	"github.com/alec-rabold/EllucianBannerApi-go/model/request"
 	. "github.com/alec-rabold/EllucianBannerApi-go/util"
-	// "github.com/anaskhan96/soup"
-	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly"
 	log "github.com/sirupsen/logrus"
 	"regexp"
@@ -140,7 +139,6 @@ func (e *EllucianAPIService) GetSections(request request.SectionsRequestModel) [
 }
 
 func getDocumentModel(collegeName, relativePath, referrerPath, term, subject, courseNumber string, entries map[string]string, collector *colly.Collector) (*goquery.Document, error) {
-	log.Debug("GetDocumentMode()")
 	basePage := EllucianUniversitiesDataPages[collegeName]
 	dataURL := basePage + relativePath
 
@@ -166,7 +164,6 @@ func getDocumentModel(collegeName, relativePath, referrerPath, term, subject, co
 		} else {
 			unencodedData += (EllucianDataFormCourse + "")
 		}
-		log.Debug("payload: " + unencodedData)
 		payload := []byte(unencodedData)
 		err = collector.PostRaw(dataURL, payload)
 	}
@@ -181,16 +178,8 @@ func getDocumentModel(collegeName, relativePath, referrerPath, term, subject, co
 func defaultCollector() *colly.Collector {
 	c := colly.NewCollector()
 	c.OnRequest(func(r *colly.Request) {
-		log.Debug("OnRequest() called")
 		r.Headers.Set("Content-Type", "application/x-www-form-urlencoded")
-		// r.Headers.Set("Referer", basePage+referrerPath)
 	})
-
-	c.OnResponse(func(r *colly.Response) {
-		log.Debug("OnResponse() called")
-		log.Debug("reponse: \n============\n", string(r.Body))
-	})
-
 	c.OnError(func(_ *colly.Response, err error) {
 		log.Errorf("Error while using colly: %s", err.Error())
 	})

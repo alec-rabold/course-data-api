@@ -1,12 +1,8 @@
 package service
 
 import (
-	// "github.com/PuerkitoBio/goquery"
 	"github.com/alec-rabold/EllucianBannerApi-go/model/entity"
 	"github.com/alec-rabold/EllucianBannerApi-go/model/request"
-	// "github.com/anaskhan96/soup"
-	// log "github.com/sirupsen/logrus"
-	// "golang.org/x/net/html"
 )
 
 // APIService defines the available api operations
