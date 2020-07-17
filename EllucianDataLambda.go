@@ -3,9 +3,10 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"github.com/alec-rabold/EllucianBannerApi-go/model/request"
-	"github.com/alec-rabold/EllucianBannerApi-go/service"
-	. "github.com/alec-rabold/EllucianBannerApi-go/util"
+
+	"github.com/alec-rabold/EllucianBannerApi-go/pkg/client"
+	"github.com/alec-rabold/EllucianBannerApi-go/pkg/model/request"
+	. "github.com/alec-rabold/EllucianBannerApi-go/pkg/util"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/mitchellh/mapstructure"
@@ -14,26 +15,26 @@ import (
 func handleRequest(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	var data []byte
 	queryParams := event.QueryStringParameters
-	service, _ := service.NewAPIService()
+	client, err := client.NewAPIClient()
 	switch event.Path {
 	case APIPathColleges:
-		data, _ = json.Marshal(service.GetColleges())
+		data, _ = json.Marshal(client.GetColleges())
 	case APIPathTerms:
 		var requestModel request.TermsRequestModel
 		mapstructure.Decode(queryParams, &requestModel)
-		data, _ = json.Marshal(service.GetTerms(requestModel))
+		data, _ = json.Marshal(client.GetTerms(requestModel))
 	case APIPathSubjects:
 		var requestModel request.SubjectsRequestModel
 		mapstructure.Decode(queryParams, &requestModel)
-		data, _ = json.Marshal(service.GetSubjects(requestModel))
+		data, _ = json.Marshal(client.GetSubjects(requestModel))
 	case APIPathCourses:
 		var requestModel request.CoursesRequestModel
 		mapstructure.Decode(queryParams, &requestModel)
-		data, _ = json.Marshal(service.GetCourses(requestModel))
+		data, _ = json.Marshal(client.GetCourses(requestModel))
 	case APIPathSections:
 		var requestModel request.SectionsRequestModel
 		mapstructure.Decode(queryParams, &requestModel)
-		data, _ = json.Marshal(service.GetSections(requestModel))
+		data, _ = json.Marshal(client.GetSections(requestModel))
 	}
 	return events.APIGatewayProxyResponse{Body: string(data), StatusCode: 200}, nil
 }

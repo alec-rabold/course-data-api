@@ -1,5 +1,11 @@
 package entity
 
+// Section is the (meta)data type for individual sections
+type Section struct {
+	Course
+	MeetingTimes []SectionMeeting `json:"meeting_times"`
+}
+
 // SectionMeeting is the (meta)data type for section meeting times
 type SectionMeeting struct {
 	Type         string `json:"type"`

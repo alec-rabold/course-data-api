@@ -1,30 +1,31 @@
 package service
 
 import (
-	"github.com/PuerkitoBio/goquery"
-	"github.com/alec-rabold/EllucianBannerApi-go/model/entity"
-	"github.com/alec-rabold/EllucianBannerApi-go/model/request"
-	. "github.com/alec-rabold/EllucianBannerApi-go/util"
-	"github.com/gocolly/colly"
-	log "github.com/sirupsen/logrus"
 	"regexp"
 	"strings"
+
+	"github.com/PuerkitoBio/goquery"
+	"github.com/alec-rabold/EllucianBannerApi-go/pkg/model/entity"
+	"github.com/alec-rabold/EllucianBannerApi-go/pkg/model/request"
+	. "github.com/alec-rabold/EllucianBannerApi-go/pkg/util"
+	"github.com/gocolly/colly"
+	log "github.com/sirupsen/logrus"
 )
 
-// EllucianAPIService is the implementation of the API for universities that use Ellucian Banner
-type EllucianAPIService struct {
+// EllucianAPIClient is the implementation of the API for universities that use Ellucian Banner
+type EllucianAPIClient struct {
 	collector *colly.Collector
 }
 
-// NewEllucianAPIService creates a new instantiation of the API Service for Ellucian universities
-func NewEllucianAPIService() *EllucianAPIService {
-	return &EllucianAPIService{
+// NewEllucianAPIClient creates a new instantiation of the API Service for Ellucian universities
+func NewEllucianAPIClient() *EllucianAPIClient {
+	return &EllucianAPIClient{
 		collector: defaultCollector(),
 	}
 }
 
 // GetColleges returns a list of all supported colleges to be used for this API
-func (e *EllucianAPIService) GetColleges() []entity.College {
+func (e *EllucianAPIClient) GetColleges() []entity.College {
 	res := make([]entity.College, 0)
 	for key, value := range EllucianSupportedColleges {
 		res = append(res, entity.College{
@@ -36,7 +37,7 @@ func (e *EllucianAPIService) GetColleges() []entity.College {
 }
 
 // GetTerms returns a list of all academic terms and respective term codes
-func (e *EllucianAPIService) GetTerms(request request.TermsRequestModel) []entity.Term {
+func (e *EllucianAPIClient) GetTerms(request request.TermsRequestModel) []entity.Term {
 	res := make([]entity.Term, 0)
 	dom, err := getDocumentModel(request.College, EllucianRegistrationTermsRelativePath, EllucianRegistrationTermsRelativePath, "", "", "", nil, e.collector)
 	if err != nil {
@@ -61,7 +62,7 @@ func (e *EllucianAPIService) GetTerms(request request.TermsRequestModel) []entit
 }
 
 // GetSubjects returns a list of all departments / subjects offered for a specific term
-func (e *EllucianAPIService) GetSubjects(request request.SubjectsRequestModel) []entity.Subject {
+func (e *EllucianAPIClient) GetSubjects(request request.SubjectsRequestModel) []entity.Subject {
 	res := make([]entity.Subject, 0)
 	callingData := map[string]string{
 		"p_calling_proc": "bwckschd.p_disp_dyn_sched",
@@ -85,7 +86,7 @@ func (e *EllucianAPIService) GetSubjects(request request.SubjectsRequestModel) [
 }
 
 // GetCourses returns a list of all courses within the specified department/subject
-func (e *EllucianAPIService) GetCourses(request request.CoursesRequestModel) []entity.Course {
+func (e *EllucianAPIClient) GetCourses(request request.CoursesRequestModel) []entity.Course {
 	res := make([]entity.Course, 0)
 	dom, err := getDocumentModel(request.College, EllucianRegistrationCoursesRelativePath, EllucianRegistrationSubjectsRelativePath, request.Term, request.Subject, "", nil, e.collector)
 	if err != nil {
@@ -100,7 +101,7 @@ func (e *EllucianAPIService) GetCourses(request request.CoursesRequestModel) []e
 }
 
 // GetSections returns a list of all sections and meeting times for a specific course
-func (e *EllucianAPIService) GetSections(request request.SectionsRequestModel) []entity.Section {
+func (e *EllucianAPIClient) GetSections(request request.SectionsRequestModel) []entity.Section {
 	res := make([]entity.Section, 0)
 	dom, err := getDocumentModel(request.College, EllucianRegistrationCoursesRelativePath, EllucianRegistrationSubjectsRelativePath, request.Term, request.Subject, request.Number, nil, e.collector)
 	if err != nil {
@@ -125,12 +126,9 @@ func (e *EllucianAPIService) GetSections(request request.SectionsRequestModel) [
 			}
 			tableRowCount++
 		})
-
-		currentCourse := courses[currentIndex]
 		sectionToAdd := entity.Section{
-			CourseID:      currentCourse.CourseID,
-			CourseSection: currentCourse.CourseSection,
-			MeetingTimes:  sectionMeetings,
+			Course:       courses[currentIndex],
+			MeetingTimes: sectionMeetings,
 		}
 		res = append(res, sectionToAdd)
 		currentIndex++
