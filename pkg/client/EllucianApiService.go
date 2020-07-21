@@ -1,6 +1,7 @@
-package service
+package client
 
 import (
+	"net/http"
 	"regexp"
 	"strings"
 
@@ -181,6 +182,18 @@ func defaultCollector() *colly.Collector {
 	c.OnError(func(_ *colly.Response, err error) {
 		log.Errorf("Error while using colly: %s", err.Error())
 	})
+	c.WithTransport(&http.Transport{
+		Proxy: http.ProxyFromEnvironment,
+		DialContext: (&net.Dialer{
+			Timeout:   60 * time.Second,
+			KeepAlive: 60 * time.Second,
+			DualStack: true,
+		}).DialContext,
+		MaxIdleConns:          100,
+		IdleConnTimeout:       90 * time.Second,
+		TLSHandshakeTimeout:   10 * time.Second,
+		ExpectContinueTimeout: 1 * time.Second,
+	}
 	return c
 }
 
