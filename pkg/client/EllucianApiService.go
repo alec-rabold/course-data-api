@@ -180,6 +180,7 @@ func defaultCollector() *colly.Collector {
 	c := colly.NewCollector()
 	c.OnRequest(func(r *colly.Request) {
 		r.Headers.Set("Content-Type", "application/x-www-form-urlencoded")
+		r.Headers.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246")
 	})
 	c.OnError(func(_ *colly.Response, err error) {
 		log.Errorf("Error while using colly: %s", err.Error())
@@ -195,7 +196,9 @@ func defaultCollector() *colly.Collector {
 		IdleConnTimeout:       90 * time.Second,
 		TLSHandshakeTimeout:   10 * time.Second,
 		ExpectContinueTimeout: 1 * time.Second,
+		ResponseHeaderTimeout: 30 * time.Second,
 	})
+	c.SetRequestTimeout(30 * time.Second)
 	return c
 }
 
@@ -259,15 +262,17 @@ func parseCourseFromCourseInfo(courseInfo string) entity.Course {
 	if strings.Contains(courseInfo, " - ") {
 		info := strings.Split(courseInfo, " - ")
 		if len(info) != 4 {
-			log.Errorf("Error formatting: %s", courseInfo)
+			log.Debugf("Parsed course info has more than 3 hyphens: %s", courseInfo)
 		}
 		return entity.Course{
-			CourseName:    info[2],
-			CourseTitle:   info[0],
-			Department:    strings.Split(info[2], " ")[0],
-			CourseNumber:  strings.Split(info[2], " ")[1],
-			CourseID:      info[1],
-			CourseSection: info[3],
+			// Parse info from back to front
+			// because course title may include hyphen
+			CourseName:    info[len(info)-2],
+			CourseTitle:   strings.Join(info[:len(info)-4], ""),
+			Department:    strings.Split(info[len(info)-2], " ")[0],
+			CourseNumber:  strings.Split(info[len(info)-2], " ")[1],
+			CourseID:      info[len(info)-3],
+			CourseSection: info[len(info)-1],
 		}
 	}
 	log.Errorf("Error formatting: %s", courseInfo)
