@@ -10,12 +10,16 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/mitchellh/mapstructure"
+	log "github.com/sirupsen/logrus"
 )
 
 func handleRequest(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	var data []byte
 	queryParams := event.QueryStringParameters
-	client, err := client.NewAPIClient()
+	client, err := client.NewAPIClient(client.EllucianBanner)
+	if err != nil {
+		log.Errorf("error instantiating API client, err: %v", err)
+	}
 	switch event.Path {
 	case APIPathColleges:
 		data, _ = json.Marshal(client.GetColleges())
