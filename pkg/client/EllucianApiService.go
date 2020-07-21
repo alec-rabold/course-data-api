@@ -1,9 +1,11 @@
 package client
 
 import (
+	"net"
 	"net/http"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/alec-rabold/EllucianBannerApi-go/pkg/model/entity"
@@ -193,7 +195,7 @@ func defaultCollector() *colly.Collector {
 		IdleConnTimeout:       90 * time.Second,
 		TLSHandshakeTimeout:   10 * time.Second,
 		ExpectContinueTimeout: 1 * time.Second,
-	}
+	})
 	return c
 }
 
