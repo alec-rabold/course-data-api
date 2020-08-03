@@ -21,7 +21,7 @@ const (
 	CentralNewMexicoCommunityCollege        string = "CNM"
 	ClarkAtlantaUniversity                  string = "CAU"
 	ColoradoCommunityCollegeSystem          string = "CCCS"
-	ColoradoSchoolofMines                   string = "Mines"
+	ColoradoSchoolOfMines                   string = "Mines"
 	ConnecticutCollege                      string = "ConnColl"
 	CreightonUniversity                     string = "Creighton"
 	DeVryUniversity                         string = "DeVry"
@@ -30,9 +30,9 @@ const (
 	EasternKentuckyUniversity               string = "EKU"
 	EasternOregonUniversity                 string = "EOU"
 	EmporiaStateUniversity                  string = "Emporia"
-	FashionInstituteofTechnology            string = "FITNYC"
+	FashionInstituteOfTechnology            string = "FITNYC"
 	FerrisStateUniversity                   string = "Ferris"
-	FloridaInstituteofTechnology            string = "FIT"
+	FloridaInstituteOfTechnology            string = "FIT"
 	GeorgeMasonUniversity                   string = "GMU"
 	GeorgiaStateUniversity                  string = "GSU"
 	GeorgiaTech                             string = "GeorgiaTech"
@@ -40,7 +40,7 @@ const (
 	HawaiiPacificUniversity                 string = "HPU"
 	HofstraUniversity                       string = "Hofstra"
 	HowardUniversity                        string = "Howard"
-	IllinoisInstituteofTechnology           string = "IIT"
+	IllinoisInstituteOfTechnology           string = "IIT"
 	ImperialValleyCollege                   string = "Imperial"
 	JohnCarrollUniversity                   string = "JCU"
 	KennesawStateUniversityinGeorgia        string = "Kennesaw"
@@ -50,10 +50,9 @@ const (
 	LongwoodUniversity                      string = "Longwood"
 	LouisianasCommunityAndTechnicalColleges string = "LCTCS"
 	MontclairStateUniversity                string = "Montclair"
-	MontgomeryCollege                       string = "Montgomery"
 	MorehouseCollege                        string = "Morehouse"
 	MorganStateUniversity                   string = "Morgan"
-	NewCollegeofFlorida                     string = "NCF"
+	NewCollegeOfFlorida                     string = "NCF"
 	NorthCarolinaCentralUniversity          string = "NCCU"
 	NorthernMichiganUniversity              string = "NMU"
 	NorthwesternStateUniversity             string = "NSULA"
@@ -66,7 +65,7 @@ const (
 	PlymouthStateUniversity                 string = "Plymouth"
 	PurdueUniversity                        string = "Purdue"
 	PurdueUniversityNorthwest               string = "PurdueNW"
-	RamapoCollegeofNewJersey                string = "Ramapo"
+	RamapoCollegeOfNewJersey                string = "Ramapo"
 	RhodesCollege                           string = "Rhodes"
 	RockhurstUniversity                     string = "Rockhurst"
 	RowanUniversity                         string = "Rowan"
@@ -83,32 +82,30 @@ const (
 	TexasSouthernUniversity                 string = "TSU"
 	TexasTechUniversitySystem               string = "TexasTech"
 	ThomasJeffersonUniversity               string = "Jefferson"
-	UniversityofAlabama                     string = "UA"
+	UniversityOfAlabama                     string = "UA"
 	UniversityOfAlabamaAtBirmingham         string = "UAB"
-	UniversityofAlabamainHuntsville         string = "UAH"
+	UniversityOfAlabamainHuntsville         string = "UAH"
 	UniversityOfCaliforniaBerkeley          string = "Berkeley"
 	UniversityOfCaliforniaSantaBarbara      string = "UCSB"
-	UniversityofCentralArkansas             string = "UCA"
-	UniversityofDallas                      string = "UDallas"
-	UniversityofDetroitMercy                string = "UDMercy"
-	UniversityofGeorgia                     string = "UGA"
-	UniversityofIllinoisSystem              string = "UIllinois"
-	UniversityofMemphis                     string = "Memphis"
+	UniversityOfCentralArkansas             string = "UCA"
+	UniversityOfDallas                      string = "UDallas"
+	UniversityOfDetroitMercy                string = "UDMercy"
+	UniversityOfGeorgia                     string = "UGA"
+	UniversityOfIllinoisSystem              string = "UIllinois"
+	UniversityOfMemphis                     string = "Memphis"
 	UniversityOfMontevallo                  string = "Montevallo"
-	UniversityofNewEnglandinMaine           string = "UNE"
-	UniversityofNewMexico                   string = "UNM"
+	UniversityOfNewEnglandinMaine           string = "UNE"
+	UniversityOfNewMexico                   string = "UNM"
 	UniversityOfOklahoma                    string = "OU"
-	UniversityofSanFrancisco                string = "UFCA"
+	UniversityOfSanFrancisco                string = "UFCA"
 	UniversityOfSouthFlorida                string = "USF"
 	UniversityOfTennesseeAtMartin           string = "UTM"
 	UniversityOfTennesseeKnoxville          string = "UTK"
-	UniversityofTennesseeKnoxville          string = "UTK"
-	UniversityofTexasatElPaso               string = "UTEP"
+	UniversityOfTexasatElPaso               string = "UTEP"
 	UniversityOfTheDistrictOfColumbia       string = "UDC"
-	UniversityofthePacific                  string = "Pacific"
+	UniversityOfthePacific                  string = "Pacific"
 	UniversityOfWashington                  string = "UW"
 	UniversitySystemOfGeorgia               string = "USG"
-	UniversitySystemofGeorgia               string = "USG"
 	VirginiaCommonwealthUniversity          string = "VCU"
 	VirginiaStateUniversity                 string = "VSU"
 	WakeForestUniversity                    string = "WFU"
@@ -124,7 +121,12 @@ const (
 	WrightStateUniversity                   string = "Wright"
 
 	/** Ellucian */
-	EllucianCourseDataFormDataDefault        string = "sel_subj=dummy&sel_day=dummy&sel_schd=dummy&sel_insm=dummy&sel_camp=dummy&sel_levl=dummy&sel_sess=dummy&sel_instr=dummy&sel_ptrm=dummy&sel_attr=dummy&sel_title=&sel_schd=%25&sel_from_cred=&sel_to_cred=&sel_levl=%25&sel_instr=%25&sel_attr=%25&begin_hh=0&begin_mi=0&begin_ap=a&end_hh=0&end_mi=0&end_ap=a&term_in="
+	// EllucianCourseDataFormDataDefault string = "term_in=202009&sel_subj=dummy&sel_day=dummy&sel_schd=dummy&sel_insm=dummy&sel_camp=dummy&sel_levl=dummy&sel_sess=dummy&sel_instr=dummy&sel_ptrm=dummy&sel_attr=dummy&sel_inds_attr=dummy&sel_gec_attr=dummy&sel_slqw_attr=dummy&sel_other_attr=dummy&sel_subj=AFR&sel_crse=&sel_title=&sel_ptrm=%25&sel_instr=%25&sel_inds_attr=%25&sel_gec_attr=%25&sel_slqw_attr=%25&sel_other_attr=%25&begin_hh=0&begin_mi=0&begin_ap=a&end_hh=0&end_mi=0&end_ap=a"
+	// EllucianCourseDataFormDataDefault        string = "sel_subj=dummy&sel_day=dummy&sel_schd=dummy&sel_insm=dummy&sel_camp=dummy&sel_levl=dummy&sel_sess=dummy&sel_instr=dummy&sel_ptrm=dummy&sel_attr=dummy&sel_title=&sel_schd=%25&sel_from_cred=&sel_to_cred=&sel_levl=%25&sel_instr=%25&sel_attr=%25&sel_inds_attr=dummy&sel_gec_attr=dummy&sel_slqw_attr=dummy&sel_other_attr=dummy&sel_ptrm=%25&sel_inds_attr=%25&sel_gec_attr=%25&sel_slqw_attr=%25&sel_other_attr=%25&begin_hh=0&begin_mi=0&begin_ap=a&end_hh=0&end_mi=0&end_ap=a&term_in="
+	// EllucianCourseDataFormDataDefault string = "sel_subj=dummy&sel_day=dummy&sel_schd=dummy&sel_insm=dummy&sel_camp=dummy&sel_levl=dummy&sel_sess=dummy&sel_instr=dummy&sel_ptrm=dummy&sel_attr=dummy&sel_inds_attr=dummy&sel_gec_attr=dummy&sel_slqw_attr=dummy&sel_other_attr=dummy&sel_title=&sel_ptrm=%25&sel_schd=%25&sel_inds_attr=%25&sel_gec_attr=%25&sel_slqw_attr=%25&sel_other_attr=%25&sel_from_cred=&sel_to_cred=&sel_levl=%25&sel_instr=%25&sel_attr=%25&begin_hh=0&begin_mi=0&begin_ap=a&end_hh=0&end_mi=0&end_ap=a&term_in="
+	// Bates                                    string = "sel_subj=dummy&sel_day=dummy&sel_schd=dummy&sel_insm=dummy&sel_camp=dummy&sel_levl=dummy&sel_sess=dummy&sel_instr=dummy&sel_ptrm=dummy&sel_attr=dummy&sel_inds_attr=dummy&sel_gec_attr=dummy&sel_slqw_attr=dummy&sel_other_attr=dummy&sel_title=&sel_ptrm=%25&sel_instr=%25&sel_inds_attr=%25&sel_gec_attr=%25&sel_slqw_attr=%25&sel_other_attr=%25&begin_hh=0&begin_mi=0&begin_ap=a&end_hh=0&end_mi=0&end_ap=a"
+	// EllucianCourseDataFormDataDefault        string = "term_in=202009&sel_subj=dummy&sel_day=dummy&sel_schd=dummy&sel_insm=dummy&sel_camp=dummy&sel_levl=dummy&sel_sess=dummy&sel_instr=dummy&sel_ptrm=dummy&sel_attr=dummy&sel_inds_attr=dummy&sel_gec_attr=dummy&sel_slqw_attr=dummy&sel_other_attr=dummy&sel_subj=AFR&sel_crse=&sel_title=&sel_ptrm=%25&sel_instr=%25&sel_inds_attr=%25&sel_gec_attr=%25&sel_slqw_attr=%25&sel_other_attr=%25&begin_hh=0&begin_mi=0&begin_ap=a&end_hh=0&end_mi=0&end_ap=a"
+	EllucianCourseDataFormDataDefault        string = "sel_subj=dummy&sel_day=dummy&sel_schd=dummy&sel_insm=dummy&sel_camp=dummy&sel_levl=dummy&sel_sess=dummy&sel_instr=dummy&sel_ptrm=dummy&sel_attr=dummy&sel_inds_attr=dummy&sel_gec_attr=dummy&sel_slqw_attr=dummy&sel_other_attr=dummy&sel_subj=dummy&sel_crse=&sel_title=&sel_from_cred=&sel_to_cred=&sel_ptrm=%25&sel_instr=%25&sel_inds_attr=%25&sel_gec_attr=%25&sel_slqw_attr=%25&sel_other_attr=%25&begin_hh=0&begin_mi=0&begin_ap=a&end_hh=0&end_mi=0&end_ap=a&term_in="
 	EllucianRegistrationTermsRelativePath    string = "/bwckschd.p_disp_dyn_sched"
 	EllucianRegistrationCoursesRelativePath  string = "/bwckschd.p_get_crse_unsec"
 	EllucianRegistrationSubjectsRelativePath string = "/bwckgens.p_proc_term_date"
@@ -263,7 +265,7 @@ var EllucianSupportedColleges = map[string]string{
 	CentralNewMexicoCommunityCollege:        "Central New Mexico Community College",
 	ClarkAtlantaUniversity:                  "Clark Atlanta University",
 	ColoradoCommunityCollegeSystem:          "Colorado Community College System",
-	ColoradoSchoolofMines:                   "Colorado School of Mines",
+	ColoradoSchoolOfMines:                   "Colorado School of Mines",
 	ConnecticutCollege:                      "Connecticut College",
 	CreightonUniversity:                     "Creighton University",
 	DeVryUniversity:                         "De Vry University",
@@ -272,9 +274,9 @@ var EllucianSupportedColleges = map[string]string{
 	EasternKentuckyUniversity:               "Eastern Kentucky University",
 	EasternOregonUniversity:                 "Eastern Oregon University",
 	EmporiaStateUniversity:                  "Emporia State University",
-	FashionInstituteofTechnology:            "Fashion institute of Technology",
+	FashionInstituteOfTechnology:            "Fashion institute of Technology",
 	FerrisStateUniversity:                   "Ferris State University",
-	FloridaInstituteofTechnology:            "Florida institute of Technology",
+	FloridaInstituteOfTechnology:            "Florida institute of Technology",
 	GeorgeMasonUniversity:                   "George Mason University",
 	GeorgiaStateUniversity:                  "Georgia State University",
 	GeorgiaTech:                             "Georgia Tech",
@@ -282,7 +284,7 @@ var EllucianSupportedColleges = map[string]string{
 	HawaiiPacificUniversity:                 "Hawaii Pacific University",
 	HofstraUniversity:                       "Hofstra University",
 	HowardUniversity:                        "Howard University",
-	IllinoisInstituteofTechnology:           "Illinois institute of Technology",
+	IllinoisInstituteOfTechnology:           "Illinois institute of Technology",
 	ImperialValleyCollege:                   "Imperial Valley College",
 	JohnCarrollUniversity:                   "John Carroll University",
 	KennesawStateUniversityinGeorgia:        "Kennesaw State University in Georgia",
@@ -292,10 +294,9 @@ var EllucianSupportedColleges = map[string]string{
 	LongwoodUniversity:                      "Longwood University",
 	LouisianasCommunityAndTechnicalColleges: "Louisianas Community and Technical Colleges",
 	MontclairStateUniversity:                "Montclair State University",
-	MontgomeryCollege:                       "Montgomery College",
 	MorehouseCollege:                        "Morehouse College",
 	MorganStateUniversity:                   "Morgan State University",
-	NewCollegeofFlorida:                     "New Collegeof Florida",
+	NewCollegeOfFlorida:                     "New College of Florida",
 	NorthCarolinaCentralUniversity:          "North Carolina Central University",
 	NorthernMichiganUniversity:              "Northern Michigan University",
 	NorthwesternStateUniversity:             "Northwestern State University",
@@ -308,7 +309,7 @@ var EllucianSupportedColleges = map[string]string{
 	PlymouthStateUniversity:                 "Plymouth State University",
 	PurdueUniversity:                        "Purdue University",
 	PurdueUniversityNorthwest:               "Purdue University Northwest",
-	RamapoCollegeofNewJersey:                "Ramapo College of New Jersey",
+	RamapoCollegeOfNewJersey:                "Ramapo College of New Jersey",
 	RhodesCollege:                           "Rhodes College",
 	RockhurstUniversity:                     "Rockhurst University",
 	RowanUniversity:                         "Rowan University",
@@ -325,28 +326,28 @@ var EllucianSupportedColleges = map[string]string{
 	TexasSouthernUniversity:                 "Texas Southern University",
 	TexasTechUniversitySystem:               "Texas Tech University System",
 	ThomasJeffersonUniversity:               "Thomas Jefferson University",
-	UniversityofAlabama:                     "University of Alabama",
+	UniversityOfAlabama:                     "University of Alabama",
 	UniversityOfAlabamaAtBirmingham:         "University of Alabama At Birmingham",
-	UniversityofAlabamainHuntsville:         "University of Alabamain Huntsville",
+	UniversityOfAlabamainHuntsville:         "University of Alabamain Huntsville",
 	UniversityOfCaliforniaBerkeley:          "University of California Berkeley",
 	UniversityOfCaliforniaSantaBarbara:      "University of California Santa Barbara",
-	UniversityofCentralArkansas:             "University of Central Arkansas",
-	UniversityofDallas:                      "University of Dallas",
-	UniversityofDetroitMercy:                "University of Detroit Mercy",
-	UniversityofGeorgia:                     "University of Georgia",
-	UniversityofIllinoisSystem:              "University of Illinois System",
-	UniversityofMemphis:                     "University of Memphis",
+	UniversityOfCentralArkansas:             "University of Central Arkansas",
+	UniversityOfDallas:                      "University of Dallas",
+	UniversityOfDetroitMercy:                "University of Detroit Mercy",
+	UniversityOfGeorgia:                     "University of Georgia",
+	UniversityOfIllinoisSystem:              "University of Illinois System",
+	UniversityOfMemphis:                     "University of Memphis",
 	UniversityOfMontevallo:                  "University of Montevallo",
-	UniversityofNewEnglandinMaine:           "University of New England in Maine",
-	UniversityofNewMexico:                   "University of New Mexico",
+	UniversityOfNewEnglandinMaine:           "University of New England in Maine",
+	UniversityOfNewMexico:                   "University of New Mexico",
 	UniversityOfOklahoma:                    "University of Oklahoma",
-	UniversityofSanFrancisco:                "University of San Francisco",
+	UniversityOfSanFrancisco:                "University of San Francisco",
 	UniversityOfSouthFlorida:                "University of South Florida",
 	UniversityOfTennesseeAtMartin:           "University of Tennessee At Martin",
 	UniversityOfTennesseeKnoxville:          "University of Tennessee Knoxville",
-	UniversityofTexasatElPaso:               "University of Texasat El Paso",
+	UniversityOfTexasatElPaso:               "University of Texasat El Paso",
 	UniversityOfTheDistrictOfColumbia:       "University of The District of Columbia",
-	UniversityofthePacific:                  "University of the Pacific",
+	UniversityOfthePacific:                  "University of the Pacific",
 	UniversityOfWashington:                  "University of Washington",
 	UniversitySystemOfGeorgia:               "University System of Georgia",
 	VirginiaCommonwealthUniversity:          "Virginia Commonwealth University",
@@ -366,16 +367,111 @@ var EllucianSupportedColleges = map[string]string{
 
 // EllucianUniversitiesDataPages maps university names to their respective Ellucian data pages
 var EllucianUniversitiesDataPages = map[string]string{
-	GeorgiaStateUniversity:         EllucianDataGeorgiaStateUniversity,
-	WeberStateUniversity:           EllucianDataWeberStateUniversity,
-	DrexelUniversity:               EllucianDataDrexelUniversity,
-	PurdueUniversity:               EllucianDataPurdueUniversity,
-	PurdueUniversityNorthwest:      EllucianDataPurdueUniversityNorthwest,
-	GeorgeMasonUniversity:          EllucianDataGeorgeMasonUniversity,
-	UniversityOfTennesseeKnoxville: EllucianDataUniversityOfTennesseeKnowxville,
-	HarperCollege:                  EllucianDataHarperCollege,
-	BrownUniversity:                EllucianDataBrownUniversity,
-	GeorgiaTech:                    EllucianDataGeorgiaTech,
+	AlabamaUniversityMontgomery:             EllucianDataAlabamaUniversityMontgomery,
+	AmericanUniversityInCairo:               EllucianDataAmericanUniversityInCairo,
+	AppalachianStateUniversity:              EllucianDataAppalachianStateUniversity,
+	ArkansasTechUniversity:                  EllucianDataArkansasTechUniversity,
+	BatesCollege:                            EllucianDataBatesCollege,
+	BridgewaterStateUniversity:              EllucianDataBridgewaterStateUniversity,
+	BrownUniversity:                         EllucianDataBrownUniversity,
+	BryantUniversity:                        EllucianDataBryantUniversity,
+	CanisiusCollege:                         EllucianDataCanisiusCollege,
+	CentralNewMexicoCommunityCollege:        EllucianDataCentralNewMexicoCommunityCollege,
+	ClarkAtlantaUniversity:                  EllucianDataClarkAtlantaUniversity,
+	ColoradoCommunityCollegeSystem:          EllucianDataColoradoCommunityCollegeSystem,
+	ColoradoSchoolOfMines:                   EllucianDataColoradoSchoolOfMines,
+	ConnecticutCollege:                      EllucianDataConnecticutCollege,
+	CreightonUniversity:                     EllucianDataCreightonUniversity,
+	DeVryUniversity:                         EllucianDataDeVryUniversity,
+	DrexelUniversity:                        EllucianDataDrexelUniversity,
+	EastCarolinaUniversity:                  EllucianDataEastCarolinaUniversity,
+	EasternKentuckyUniversity:               EllucianDataEasternKentuckyUniversity,
+	EasternOregonUniversity:                 EllucianDataEasternOregonUniversity,
+	EmporiaStateUniversity:                  EllucianDataEmporiaStateUniversity,
+	FashionInstituteOfTechnology:            EllucianDataFashionInstituteOfTechnology,
+	FerrisStateUniversity:                   EllucianDataFerrisStateUniversity,
+	FloridaInstituteOfTechnology:            EllucianDataFloridaInstituteOfTechnology,
+	GeorgeMasonUniversity:                   EllucianDataGeorgeMasonUniversity,
+	GeorgiaStateUniversity:                  EllucianDataGeorgiaStateUniversity,
+	GeorgiaTech:                             EllucianDataGeorgiaTech,
+	HarperCollege:                           EllucianDataHarperCollege,
+	HawaiiPacificUniversity:                 EllucianDataHawaiiPacificUniversity,
+	HofstraUniversity:                       EllucianDataHofstraUniversity,
+	HowardUniversity:                        EllucianDataHowardUniversity,
+	IllinoisInstituteOfTechnology:           EllucianDataIllinoisInstituteOfTechnology,
+	ImperialValleyCollege:                   EllucianDataImperialValleyCollege,
+	JohnCarrollUniversity:                   EllucianDataJohnCarrollUniversity,
+	KennesawStateUniversityinGeorgia:        EllucianDataKennesawStateUniversityinGeorgia,
+	KentuckyStateUniversity:                 EllucianDataKentuckyStateUniversity,
+	LakeSuperiorStateUniversity:             EllucianDataLakeSuperiorStateUniversity,
+	LewisUniverisity:                        EllucianDataLewisUniverisity,
+	LongwoodUniversity:                      EllucianDataLongwoodUniversity,
+	LouisianasCommunityAndTechnicalColleges: EllucianDataLouisianasCommunityAndTechnicalColleges,
+	MontclairStateUniversity:                EllucianDataMontclairStateUniversity,
+	MorehouseCollege:                        EllucianDataMorehouseCollege,
+	MorganStateUniversity:                   EllucianDataMorganStateUniversity,
+	NewCollegeOfFlorida:                     EllucianDataNewCollegeOfFlorida,
+	NorthCarolinaCentralUniversity:          EllucianDataNorthCarolinaCentralUniversity,
+	NorthernMichiganUniversity:              EllucianDataNorthernMichiganUniversity,
+	NorthwesternStateUniversity:             EllucianDataNorthwesternStateUniversity,
+	NovaSoutheasternUniversity:              EllucianDataNovaSoutheasternUniversity,
+	OaklandUniversity:                       EllucianDataOaklandUniversity,
+	OklahomaBaptistUniversity:               EllucianDataOklahomaBaptistUniversity,
+	OklahomaStateUniversity:                 EllucianDataOklahomaStateUniversity,
+	OralRobertsUniversity:                   EllucianDataOralRobertsUniversity,
+	PaceUniversity:                          EllucianDataPaceUniversity,
+	PlymouthStateUniversity:                 EllucianDataPlymouthStateUniversity,
+	PurdueUniversity:                        EllucianDataPurdueUniversity,
+	PurdueUniversityNorthwest:               EllucianDataPurdueUniversityNorthwest,
+	RamapoCollegeOfNewJersey:                EllucianDataRamapoCollegeOfNewJersey,
+	RhodesCollege:                           EllucianDataRhodesCollege,
+	RockhurstUniversity:                     EllucianDataRockhurstUniversity,
+	RowanUniversity:                         EllucianDataRowanUniversity,
+	RutgersUniversity:                       EllucianDataRutgersUniversity,
+	SouthCarolinaStateUniversity:            EllucianDataSouthCarolinaStateUniversity,
+	SouthernIllinoisUniversityEdwardsville:  EllucianDataSouthernIllinoisUniversityEdwardsville,
+	SouthernUtahUniversity:                  EllucianDataSouthernUtahUniversity,
+	SpelmanCollege:                          EllucianDataSpelmanCollege,
+	StEdwardsUniversityInAustin:             EllucianDataStEdwardsUniversityInAustin,
+	StocktonUniversity:                      EllucianDataStocktonUniversity,
+	TempleUniversity:                        EllucianDataTempleUniversity,
+	TennesseeStateUniversity:                EllucianDataTennesseeStateUniversity,
+	TexasSouthernUniversity:                 EllucianDataTexasSouthernUniversity,
+	TexasTechUniversitySystem:               EllucianDataTexasTechUniversitySystem,
+	ThomasJeffersonUniversity:               EllucianDataThomasJeffersonUniversity,
+	UniversityOfAlabama:                     EllucianDataUniversityOfAlabama,
+	UniversityOfAlabamaAtBirmingham:         EllucianDataUniversityOfAlabamaAtBirmingham,
+	UniversityOfAlabamainHuntsville:         EllucianDataUniversityOfAlabamainHuntsville,
+	UniversityOfCentralArkansas:             EllucianDataUniversityOfCentralArkansas,
+	UniversityOfDallas:                      EllucianDataUniversityOfDallas,
+	UniversityOfDetroitMercy:                EllucianDataUniversityOfDetroitMercy,
+	UniversityOfGeorgia:                     EllucianDataUniversityOfGeorgia,
+	UniversityOfIllinoisSystem:              EllucianDataUniversityOfIllinoisSystem,
+	UniversityOfMemphis:                     EllucianDataUniversityOfMemphis,
+	UniversityOfMontevallo:                  EllucianDataUniversityOfMontevallo,
+	UniversityOfNewEnglandinMaine:           EllucianDataUniversityOfNewEnglandinMaine,
+	UniversityOfNewMexico:                   EllucianDataUniversityOfNewMexico,
+	UniversityOfOklahoma:                    EllucianDataUniversityOfOklahoma,
+	UniversityOfSanFrancisco:                EllucianDataUniversityOfSanFrancisco,
+	UniversityOfSouthFlorida:                EllucianDataUniversityOfSouthFlorida,
+	UniversityOfTennesseeAtMartin:           EllucianDataUniversityOfTennesseeAtMartin,
+	UniversityOfTennesseeKnoxville:          EllucianDataUniversityOfTennesseeKnoxville,
+	UniversityOfTexasatElPaso:               EllucianDataUniversityOfTexasatElPaso,
+	UniversityOfTheDistrictOfColumbia:       EllucianDataUniversityOfTheDistrictOfColumbia,
+	UniversityOfthePacific:                  EllucianDataUniversityOfthePacific,
+	UniversitySystemOfGeorgia:               EllucianDataUniversitySystemOfGeorgia,
+	VirginiaCommonwealthUniversity:          EllucianDataVirginiaCommonwealthUniversity,
+	VirginiaStateUniversity:                 EllucianDataVirginiaStateUniversity,
+	WakeForestUniversity:                    EllucianDataWakeForestUniversity,
+	WeberStateUniversity:                    EllucianDataWeberStateUniversity,
+	WesternNewMexicoUniversity:              EllucianDataWesternNewMexicoUniversity,
+	WestGeorgiaTechnicalCollege:             EllucianDataWestGeorgiaTechnicalCollege,
+	WestVirginiaNetwork:                     EllucianDataWestVirginiaNetwork,
+	WichitaStateUniversity:                  EllucianDataWichitaStateUniversity,
+	WilliamAndMary:                          EllucianDataWilliamAndMary,
+	WilliamPatersonUniversity:               EllucianDataWilliamPatersonUniversity,
+	WinthropUniversity:                      EllucianDataWinthropUniversity,
+	WrightStateUniversity:                   EllucianDataWrightStateUniversity,
 }
 
 // InvalidTerms are terms that should be ingored when parsing

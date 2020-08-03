@@ -9,3 +9,9 @@ type Course struct {
 	CourseID      string `json:"course_id"`
 	CourseSection string `json:"-"`
 }
+
+func (c *Course) IsComplete() bool {
+	return c.CourseName != "" && c.CourseTitle != "" &&
+		c.Department != "" && c.CourseNumber != "" &&
+		c.CourseID != ""
+}

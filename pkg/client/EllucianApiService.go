@@ -1,17 +1,19 @@
 package client
 
 import (
+	"fmt"
 	"net"
 	"net/http"
 	"regexp"
 	"strings"
 	"time"
 
-	"github.com/PuerkitoBio/goquery"
 	"github.com/alec-rabold/EllucianBannerApi-go/pkg/model/entity"
 	"github.com/alec-rabold/EllucianBannerApi-go/pkg/model/request"
 	. "github.com/alec-rabold/EllucianBannerApi-go/pkg/util"
+	"github.com/alec-rabold/goquery"
 	"github.com/gocolly/colly"
+	"github.com/gocolly/colly/debug"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -90,32 +92,60 @@ func (e *EllucianAPIClient) GetSubjects(request request.SubjectsRequestModel) []
 
 // GetCourses returns a list of all courses within the specified department/subject
 func (e *EllucianAPIClient) GetCourses(request request.CoursesRequestModel) []entity.Course {
-	res := make([]entity.Course, 0)
+	set := make(map[string]entity.Course)
 	dom, err := getDocumentModel(request.College, EllucianRegistrationCoursesRelativePath, EllucianRegistrationSubjectsRelativePath, request.Term, request.Subject, "", nil, e.collector)
 	if err != nil {
 		log.Errorf("Error getting document model: %s", err.Error())
 	}
+
 	elems := dom.Find(formatSelectorForAttribute(EllucianDataClassKey, EllucianDataClassValueCourses))
 	elems.Each(func(_ int, s *goquery.Selection) {
 		course := parseCourseFromCourseInfo(s.Text())
-		res = append(res, course)
+		if _, exists := set[course.CourseName]; !exists {
+			set[course.CourseName] = course
+		}
 	})
+	res := make([]entity.Course, 0, len(set))
+	for _, v := range set {
+		res = append(res, v)
+	}
+	// try different parsing format if nothing found (HACKY)
+	if len(res) == 0 {
+		elems = dom.Find("tr")
+		fmt.Printf("\nnum of tr's found: %d\n", elems.Length())
+		res = parseCoursesFromCourseInfoRows(elems, dom)
+		for i, course := range res {
+			fmt.Printf("Course #%d: \n%v\n\n", i, course)
+		}
+	}
+	// elems.Each(func(_ int, s *goquery.Selection) {
+	// 	course := parseCourseFromCourseInfoRows(s.Text())
+	// 	fmt.Printf("Course: %v", course)
+	// 	if _, exists := set[course.CourseName]; !exists {
+	// 		set[course.CourseName] = course
+	// 	}
+	// })
 	return res
 }
 
 // GetSections returns a list of all sections and meeting times for a specific course
-func (e *EllucianAPIClient) GetSections(request request.SectionsRequestModel) []entity.Section {
+func (e *EllucianAPIClient) GetSections(req request.SectionsRequestModel) []entity.Section {
 	res := make([]entity.Section, 0)
-	dom, err := getDocumentModel(request.College, EllucianRegistrationCoursesRelativePath, EllucianRegistrationSubjectsRelativePath, request.Term, request.Subject, request.Number, nil, e.collector)
+	dom, err := getDocumentModel(req.College, EllucianRegistrationCoursesRelativePath, EllucianRegistrationSubjectsRelativePath, req.Term, req.Subject, req.Number, nil, e.collector)
 	if err != nil {
 		log.Errorf("Error getting document model: %s", err.Error())
 	}
-	courses := make([]entity.Course, 0)
-	elemsCourses := dom.Find(formatSelectorForAttribute(EllucianDataClassKey, EllucianDataClassValueCourses))
-	elemsCourses.Each(func(_ int, s *goquery.Selection) {
-		course := parseCourseFromCourseInfo(s.Text())
-		courses = append(courses, course)
+	courses := e.GetCourses(request.CoursesRequestModel{
+		College: req.College,
+		Term:    req.Term,
+		Subject: req.Subject,
 	})
+	// courses := make([]entity.Course, 0)
+	// elemsCourses := dom.Find(formatSelectorForAttribute(EllucianDataClassKey, EllucianDataClassValueCourses))
+	// elemsCourses.Each(func(_ int, s *goquery.Selection) {
+	// 	course := parseCourseFromCourseInfo(s.Text())
+	// 	courses = append(courses, course)
+	// })
 	attrQueryMeetings := formatSelectorForAttribute(EllucianDataClassTableKey, EllucianDataClassTableValueSections)
 	elemsMeetings := dom.Find(attrQueryMeetings)
 	currentIndex := 0
@@ -136,6 +166,15 @@ func (e *EllucianAPIClient) GetSections(request request.SectionsRequestModel) []
 		res = append(res, sectionToAdd)
 		currentIndex++
 	})
+	// try different parsing format if nothing found (HACKY)
+	if len(res) == 0 {
+		elemsMeetings = dom.Find("tr")
+		// fmt.Printf("\nnum of tr's found: %d\n", elems.Length())
+		res = parseSectionsFromCourseInfoRows(elemsMeetings, dom)
+		for i, section := range res {
+			fmt.Printf("Section #%d: \n%v\n\n", i, section)
+		}
+	}
 	return res
 }
 
@@ -146,6 +185,7 @@ func getDocumentModel(collegeName, relativePath, referrerPath, term, subject, co
 	var err error
 	var dom *goquery.Document
 	collector.OnResponse(func(r *colly.Response) {
+		// fmt.Println(string(r.Body))
 		dom, err = goquery.NewDocumentFromReader(strings.NewReader(string(r.Body)))
 		if err != nil {
 			log.Errorf("Error creating dom from html: %s", err.Error())
@@ -158,6 +198,7 @@ func getDocumentModel(collegeName, relativePath, referrerPath, term, subject, co
 	if len(entries) > 0 || len(term) == 0 {
 		err = collector.Post(dataURL, entries)
 	} else {
+		// TODO: parse the <input> names/values from the referrer
 		unencodedData := EllucianCourseDataFormDataDefault + term + EllucianDataFormSubject + subject
 		// Add course number to payload if desired
 		if len(courseNumber) != 0 {
@@ -177,7 +218,7 @@ func getDocumentModel(collegeName, relativePath, referrerPath, term, subject, co
 }
 
 func defaultCollector() *colly.Collector {
-	c := colly.NewCollector()
+	c := colly.NewCollector(colly.Debugger(&debug.LogDebugger{}))
 	c.OnRequest(func(r *colly.Request) {
 		r.Headers.Set("Content-Type", "application/x-www-form-urlencoded")
 		r.Headers.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246")
@@ -204,7 +245,6 @@ func defaultCollector() *colly.Collector {
 
 func formatSelectorForAttribute(key, value string) string {
 	return "*[" + key + "=" + "\"" + value + "\"" + "]"
-
 }
 
 func getSingularElement(elems *goquery.Selection) *goquery.Selection {
@@ -268,7 +308,7 @@ func parseCourseFromCourseInfo(courseInfo string) entity.Course {
 			// Parse info from back to front
 			// because course title may include hyphen
 			CourseName:    info[len(info)-2],
-			CourseTitle:   strings.Join(info[:len(info)-4], ""),
+			CourseTitle:   strings.Join(info[:len(info)-3], ""),
 			Department:    strings.Split(info[len(info)-2], " ")[0],
 			CourseNumber:  strings.Split(info[len(info)-2], " ")[1],
 			CourseID:      info[len(info)-3],
@@ -277,6 +317,123 @@ func parseCourseFromCourseInfo(courseInfo string) entity.Course {
 	}
 	log.Errorf("Error formatting: %s", courseInfo)
 	return entity.Course{}
+}
+
+// Sooo hacky, but that's the fun of parsing variable-structured data
+func parseCoursesFromCourseInfoRows(tableRows *goquery.Selection, document *goquery.Document) []entity.Course {
+	set := make(map[string]entity.Course)
+	for _, trNode := range tableRows.Nodes {
+		var parsedCourse entity.Course
+		// Create single selection
+		tableRow := goquery.NewSingleSelection(trNode, document)
+		tableDataSelection := tableRow.Find("td")
+		colNum := 0
+		for cur, tdNode := range tableDataSelection.Nodes {
+			// Need to skip the top-left <td></td>
+			if cur == 0 {
+				continue
+			}
+			tableData := goquery.NewSingleSelection(tdNode, document)
+			// Check if <tr> children (<td>) contain CLASS="dddefault"
+			if tdAttrClass, exists := tableData.Attr("class"); exists && tdAttrClass == "dddefault" {
+				// check if <tr> is for related section; if so, break
+				if tableData.Text() == "&nbsp;" {
+					fmt.Printf("\nSkipped: &nbsp;\n")
+					break
+				}
+				switch colNum {
+				case 0:
+					parsedCourse.CourseID = strings.TrimSpace(tableData.Text())
+					break
+				case 1:
+					parsedCourse.Department = strings.TrimSpace(tableData.Text())
+					break
+				case 2:
+					parsedCourse.CourseNumber = strings.TrimSpace(tableData.Text())
+					break
+				case 3:
+					parsedCourse.CourseSection = strings.TrimSpace(tableData.Text())
+					break
+				case 5:
+					parsedCourse.CourseTitle = strings.TrimSpace(tableData.Text())
+				}
+				colNum++
+			} else {
+				fmt.Print("\nSkipped, didn't contains dddefault\n")
+				break
+			}
+		}
+		parsedCourse.CourseName = fmt.Sprintf("%s %s", parsedCourse.Department, parsedCourse.CourseNumber)
+		// Check for zero-value object
+		if parsedCourse.IsComplete() {
+			if _, exists := set[parsedCourse.CourseName]; !exists {
+				set[parsedCourse.CourseName] = parsedCourse
+			}
+		}
+	}
+	res := make([]entity.Course, 0, len(set))
+	for _, v := range set {
+		res = append(res, v)
+	}
+	return res
+}
+
+func parseSectionsFromCourseInfoRows(tableRows *goquery.Selection, document *goquery.Document) []entity.Section {
+	set := make(map[string]entity.Section)
+	for _, trNode := range tableRows.Nodes {
+		var parsedSection entity.Section
+		// Create single selection
+		tableRow := goquery.NewSingleSelection(trNode, document)
+		tableDataSelection := tableRow.Find("td")
+		colNum := 0
+		for cur, tdNode := range tableDataSelection.Nodes {
+			// Need to skip the top-left <td></td>
+			if cur == 0 {
+				continue
+			}
+			tableData := goquery.NewSingleSelection(tdNode, document)
+			// Check if <tr> children (<td>) contain CLASS="dddefault"
+			if tdAttrClass, exists := tableData.Attr("class"); exists && tdAttrClass == "dddefault" {
+				// check if <tr> is for related section; if so, break
+				if tableData.Text() == "&nbsp;" {
+					fmt.Printf("\nSkipped: &nbsp;\n")
+					break
+				}
+				switch colNum {
+				case 0:
+					parsedSection.CourseID = strings.TrimSpace(tableData.Text())
+					break
+				case 1:
+					parsedSection.Department = strings.TrimSpace(tableData.Text())
+					break
+				case 2:
+					parsedSection.CourseNumber = strings.TrimSpace(tableData.Text())
+					break
+				case 3:
+					parsedSection.CourseSection = strings.TrimSpace(tableData.Text())
+					break
+				case 5:
+					parsedSection.CourseTitle = strings.TrimSpace(tableData.Text())
+				}
+				colNum++
+			} else {
+				fmt.Print("\nSkipped, didn't contains dddefault\n")
+				break
+			}
+		}
+		parsedSection.CourseName = fmt.Sprintf("%s %s", parsedSection.Department, parsedSection.CourseNumber)
+		// Check for zero-value object
+		if parsedSection.IsComplete() {
+			if _, exists := set[parsedSection.CourseName]; !exists {
+				set[parsedSection.CourseName] = parsedSection
+			}
+		}
+	}
+	res := make([]entity.Section, 0, len(set))
+	for _, v := range set {
+		res = append(res, v)
+	}
+	return res
 }
 
 func caseInsensitiveContains(s, substr string) bool {
