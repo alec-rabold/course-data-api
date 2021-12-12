@@ -1,8 +1,8 @@
-# Ellucian Banner REST API (Unofficial)
+# Course Data API
 
 <!-- TOC depthFrom:1 depthTo:2 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- [Ellucian Banner REST API (Unofficial)](#crossref-rest-api)
+- [Course Data API](#crossref-rest-api)
     - [Preamble](#preamble)
     - [API overview](#api-overview)
     - [Resource components](#resource-components)
@@ -16,7 +16,7 @@
 
 ## Preamble
 
-The Ellucian Banner REST API (Unofficial) allows anybody to request up-to-date registration data from more than 750+ universities that use Ellucian's Banner software.
+The Course Data API allows anybody to request up-to-date registration data from more than 750+ universities..
 
 
 ## API overview
