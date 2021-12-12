@@ -1,6 +1,6 @@
 package entity
 
-// Course is the (meta)data type for individual courses
+// Course is the data type for individual courses
 type Course struct {
 	CourseName    string `json:"course_name"`
 	CourseTitle   string `json:"course_title"`
