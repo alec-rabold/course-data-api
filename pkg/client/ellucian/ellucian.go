@@ -3,7 +3,6 @@ package ellucian
 import (
 	"context"
 	"fmt"
-	"net/url"
 	"regexp"
 	"strings"
 
@@ -46,7 +45,7 @@ func (c *Client) GetColleges(ctx context.Context) ([]entity.College, error) {
 func (c *Client) GetTerms(ctx context.Context, request request.Terms) ([]entity.Term, error) {
 	var res []entity.Term
 
-	page := url.PathEscape(ellucian.SelfServicePages[ellucian.College(request.College)] + ellucian.RegistrationTermsRelativePath)
+	page := ellucian.SelfServicePages[ellucian.College(request.College)] + ellucian.RegistrationTermsRelativePath
 	doc, err := c.crawler.GetDocument(ctx, page,
 		crawler.WithReferer(ellucian.RegistrationTermsRelativePath),
 	)
@@ -59,7 +58,11 @@ func (c *Client) GetTerms(ctx context.Context, request request.Terms) ([]entity.
 	if err != nil {
 		return nil, fmt.Errorf("error getting non-dummy selection: %w", err)
 	}
-	selection.Children().Each(func(_ int, s *goquery.Selection) {
+	children := selection.Children()
+	if err != nil {
+		return nil, fmt.Errorf("no child elements for selection %v", selection)
+	}
+	children.Each(func(_ int, s *goquery.Selection) {
 		term := sanitizeTerm(s.Text())
 		season := parseNameFromTerm(term)
 		year := parseYearFromTerm(term)
@@ -83,7 +86,7 @@ func (c *Client) GetTerms(ctx context.Context, request request.Terms) ([]entity.
 func (c *Client) GetSubjects(ctx context.Context, request request.Subjects) ([]entity.Subject, error) {
 	var res []entity.Subject
 
-	page := url.PathEscape(ellucian.SelfServicePages[ellucian.College(request.College)] + ellucian.RegistrationSubjectsRelativePath)
+	page := ellucian.SelfServicePages[ellucian.College(request.College)] + ellucian.RegistrationSubjectsRelativePath
 	data := ellucian.DefaultCourseDataFormValues()
 	data.Add("p_term", "p_disp_dyn_sched")
 	data.Add("p_calling_proc", request.Term)
@@ -119,7 +122,7 @@ func (c *Client) GetSubjects(ctx context.Context, request request.Subjects) ([]e
 func (c *Client) GetCourses(ctx context.Context, request request.Courses) ([]entity.Course, error) {
 	var res []entity.Course
 
-	page := url.PathEscape(ellucian.SelfServicePages[ellucian.College(request.College)] + ellucian.RegistrationCoursesRelativePath)
+	page := ellucian.SelfServicePages[ellucian.College(request.College)] + ellucian.RegistrationCoursesRelativePath
 	data := ellucian.DefaultCourseDataFormValues()
 	data.Set("term_in", request.Term)
 	data.Set(ellucian.DataFormSubject, request.Subject)
@@ -153,7 +156,7 @@ func (c *Client) GetSections(ctx context.Context, request request.Sections) ([]e
 	var res []entity.Section
 
 	// TODO: this is one
-	page := url.PathEscape(ellucian.SelfServicePages[ellucian.College(request.College)] + ellucian.RegistrationCoursesRelativePath)
+	page := ellucian.SelfServicePages[ellucian.College(request.College)] + ellucian.RegistrationCoursesRelativePath
 	data := ellucian.DefaultCourseDataFormValues()
 	// TODO: these constants should live in package "util/ellucian./constants.go"
 	// TODO: see if we can use a struct, serialize as json, and set the content encoding as such
@@ -215,8 +218,8 @@ func (c *Client) GetSections(ctx context.Context, request request.Sections) ([]e
 // Many ellucian. selections contain dummy nodes so we need to filter those out
 func getNonDummySelection(elems *goquery.Selection) (res *goquery.Selection, err error) {
 	elems.Each(func(_ int, elem *goquery.Selection) {
-		val, exists := elem.Attr("value")
-		if !exists || strings.EqualFold(val, ellucian.DataDummyNode) {
+		val, _ := elem.Attr("value")
+		if strings.EqualFold(val, ellucian.DataDummyNode) {
 			return
 		}
 		// Ensure there's no more than one non-dummy selection,
@@ -226,6 +229,9 @@ func getNonDummySelection(elems *goquery.Selection) (res *goquery.Selection, err
 		}
 		res = elem
 	})
+	if res == nil {
+		return nil, fmt.Errorf("no non-dummy nodes found")
+	}
 	return res, err
 }
 

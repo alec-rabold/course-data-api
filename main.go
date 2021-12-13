@@ -19,6 +19,9 @@ import (
 	"go.uber.org/zap"
 )
 
+// Version is set at build-time through the Makefile
+var Version = "unknown"
+
 func main() {
 	lambda.Start(handleRequest)
 }
@@ -28,15 +31,15 @@ func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 	if err != nil {
 		return events.APIGatewayProxyResponse{}, fmt.Errorf("failed to instantiate logger: %v", err)
 	}
-	log.Info("incoming request", "request", request)
+	log.Info("incoming request", "request", request, "version", Version)
 
-	r := router.NewRouter(apiv1.BasePath)
+	r := newRouter()
 
 	return r.Handle(ctx, request)
 }
 
 // TODO: the parameters handling can probably be built into the router
-func newRouter(ctx context.Context) {
+func newRouter() *router.Router {
 	r := router.NewRouter(apiv1.BasePath)
 
 	// Currently only Ellucian Banner is supported so default to it here
@@ -76,6 +79,8 @@ func newRouter(ctx context.Context) {
 		}
 		return marshalResponse(client.GetSections(ctx, requestModel))
 	})
+
+	return r
 }
 
 // Helper method to marshal data returned by the API client into an API Gateway Proxy Response
