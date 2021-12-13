@@ -70,9 +70,6 @@ func entries() []TableEntry {
 	var entries []TableEntry
 	for college, name := range ellucian.SupportedColleges {
 		entries = append(entries, Entry(name, college))
-		// TEMP
-		break
-		// TEMP
 	}
 	return entries
 }
