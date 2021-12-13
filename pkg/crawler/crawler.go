@@ -39,6 +39,7 @@ func defaultCrawler() *Crawler {
 					Timeout:   30 * time.Second,
 					KeepAlive: 30 * time.Second,
 				}).DialContext,
+
 				MaxIdleConns:        100,
 				IdleConnTimeout:     90 * time.Second,
 				TLSHandshakeTimeout: 10 * time.Second,

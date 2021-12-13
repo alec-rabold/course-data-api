@@ -4,16 +4,16 @@ import (
 	"context"
 	"testing"
 
-	"github.com/alec-rabold/course-data-api/pkg/client/ellucian"
-	"github.com/alec-rabold/course-data-api/pkg/crawler"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
+	"github.com/alec-rabold/course-data-api/pkg/client/ellucian"
+	"github.com/alec-rabold/course-data-api/pkg/crawler"
 )
 
 var ctx context.Context
 
-// Shared pool of supported client
+// Shared pool of supported clients
 var (
 	ellucianClient *ellucian.Client
 )

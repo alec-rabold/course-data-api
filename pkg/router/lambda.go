@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 	"sync"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -54,7 +55,7 @@ func (r *Router) Handle(ctx context.Context, request events.APIGatewayProxyReque
 	r.routesMutex.RLock()
 	defer r.routesMutex.RUnlock()
 
-	rt, exists := r.routes[request.Path]
+	rt, exists := r.routes[strings.TrimPrefix(request.Path, r.basePath)]
 	if !exists {
 		return events.APIGatewayProxyResponse{
 			Body:       fmt.Sprintf("error: unsupported path (Path: '%s')", request.Path),
