@@ -45,7 +45,7 @@ func defaultCrawler() *Crawler {
 				TLSHandshakeTimeout: 10 * time.Second,
 
 				ExpectContinueTimeout: 4 * time.Second,
-				ResponseHeaderTimeout: 5 * time.Second,
+				ResponseHeaderTimeout: 45 * time.Second,
 			},
 		},
 	}
@@ -115,10 +115,22 @@ func (c *Crawler) GetDocument(ctx context.Context, url string, opts ...GetDocume
 	return doc, nil
 }
 
+// TODO: this is way lower-level than it needs to be..
 // WithData applies the given data to the request body
 func WithData(data url.Values) func(*http.Request) {
 	return func(request *http.Request) {
-		request.Body = io.NopCloser(strings.NewReader(data.Encode()))
+		reader := strings.NewReader(data.Encode())
+		request.Body = io.NopCloser(reader)
+		request.ContentLength = int64(reader.Len())
+		snapshot := *reader
+		request.GetBody = func() (io.ReadCloser, error) {
+			r := snapshot
+			return io.NopCloser(&r), nil
+		}
+		if request.GetBody != nil && request.ContentLength == 0 {
+			request.Body = http.NoBody
+			request.GetBody = func() (io.ReadCloser, error) { return http.NoBody, nil }
+		}
 	}
 }
 

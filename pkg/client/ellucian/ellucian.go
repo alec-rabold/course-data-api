@@ -3,6 +3,7 @@ package ellucian
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"regexp"
 	"strings"
 
@@ -45,10 +46,8 @@ func (c *Client) GetColleges(ctx context.Context) ([]entity.College, error) {
 func (c *Client) GetTerms(ctx context.Context, request request.Terms) ([]entity.Term, error) {
 	var res []entity.Term
 
-	page := ellucian.SelfServicePages[ellucian.College(request.College)] + ellucian.RegistrationTermsRelativePath
-	doc, err := c.crawler.GetDocument(ctx, page,
-		crawler.WithReferer(ellucian.RegistrationTermsRelativePath),
-	)
+	base := ellucian.SelfServicePages[ellucian.College(request.College)]
+	doc, err := c.crawler.GetDocument(ctx, fmt.Sprintf("%s/%s", base, ellucian.RegistrationTermsProcedure))
 	if err != nil {
 		return nil, fmt.Errorf("error getting document model: %w", err)
 	}
@@ -86,14 +85,13 @@ func (c *Client) GetTerms(ctx context.Context, request request.Terms) ([]entity.
 func (c *Client) GetSubjects(ctx context.Context, request request.Subjects) ([]entity.Subject, error) {
 	var res []entity.Subject
 
-	page := ellucian.SelfServicePages[ellucian.College(request.College)] + ellucian.RegistrationSubjectsRelativePath
-	data := ellucian.DefaultCourseDataFormValues()
-	data.Add("p_term", "p_disp_dyn_sched")
-	data.Add("p_calling_proc", request.Term)
-
-	doc, err := c.crawler.GetDocument(ctx, page,
-		crawler.WithData(data),
-		crawler.WithReferer(ellucian.RegistrationTermsRelativePath),
+	base := ellucian.SelfServicePages[ellucian.College(request.College)]
+	doc, err := c.crawler.GetDocument(ctx, fmt.Sprintf("%s/%s", base, ellucian.RegistrationSubjectsProcedure),
+		crawler.WithData(url.Values{
+			"p_term":         []string{request.Term},
+			"p_calling_proc": []string{"bwckschd.p_disp_dyn_sched"},
+		}),
+		crawler.WithReferer(fmt.Sprintf("%s/%s", base, ellucian.RegistrationTermsProcedure)),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("error getting document model: %w", err)
@@ -122,14 +120,14 @@ func (c *Client) GetSubjects(ctx context.Context, request request.Subjects) ([]e
 func (c *Client) GetCourses(ctx context.Context, request request.Courses) ([]entity.Course, error) {
 	var res []entity.Course
 
-	page := ellucian.SelfServicePages[ellucian.College(request.College)] + ellucian.RegistrationCoursesRelativePath
+	base := ellucian.SelfServicePages[ellucian.College(request.College)]
 	data := ellucian.DefaultCourseDataFormValues()
-	data.Set("term_in", request.Term)
-	data.Set(ellucian.DataFormSubject, request.Subject)
+	data.SetTerm(request.Term)
+	data.SetSubject(request.Subject)
 
-	doc, err := c.crawler.GetDocument(ctx, page,
-		crawler.WithData(data),
-		crawler.WithReferer(ellucian.RegistrationSubjectsRelativePath),
+	doc, err := c.crawler.GetDocument(ctx, fmt.Sprintf("%s/%s", base, ellucian.RegistrationCoursesProcedure),
+		crawler.WithData(data.Values()),
+		crawler.WithReferer(fmt.Sprintf("%s/%s", base, ellucian.RegistrationTermsProcedure)),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("error getting document model: %w", err)
@@ -155,23 +153,23 @@ func (c *Client) GetCourses(ctx context.Context, request request.Courses) ([]ent
 func (c *Client) GetSections(ctx context.Context, request request.Sections) ([]entity.Section, error) {
 	var res []entity.Section
 
-	// TODO: this is one
-	page := ellucian.SelfServicePages[ellucian.College(request.College)] + ellucian.RegistrationCoursesRelativePath
+	base := ellucian.SelfServicePages[ellucian.College(request.College)]
 	data := ellucian.DefaultCourseDataFormValues()
 	// TODO: these constants should live in package "util/ellucian./constants.go"
 	// TODO: see if we can use a struct, serialize as json, and set the content encoding as such
-	data.Set(ellucian.DataFormTerm, request.Term)
-	data.Set(ellucian.DataFormSubject, request.Subject)
-	data.Set(ellucian.DataFormCourse, request.Term)
+	data.SetTerm(request.Term)
+	data.SetSubject(request.Subject)
+	data.SetCourse(request.Number)
 
-	doc, err := c.crawler.GetDocument(ctx, page,
-		crawler.WithData(data),
-		crawler.WithReferer(ellucian.RegistrationSubjectsRelativePath),
+	doc, err := c.crawler.GetDocument(ctx, fmt.Sprintf("%s/%s", base, ellucian.RegistrationCoursesProcedure),
+		crawler.WithData(data.Values()),
+		crawler.WithReferer(fmt.Sprintf("%s/%s", base, ellucian.RegistrationSubjectsProcedure)),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("error getting document model: %w", err)
 	}
 
+	// TODO: maybe just call GetCourses() here instead
 	var courses []entity.Course
 	elemsCourses := doc.Find(attributeSelector(ellucian.DataClassKey, ellucian.DataClassValueCourses))
 
@@ -259,11 +257,12 @@ func parseYearFromTerm(term string) string {
 func parseScheduledMeetingFromTableRow(row *goquery.Selection) (entity.SectionMeeting, error) {
 	var data []string
 	dataColumns := row.Find(ellucian.DataClassTableDataColumnTag)
-	dataColumns.Each(func(i int, col *goquery.Selection) {
+	dataColumns.Each(func(_ int, col *goquery.Selection) {
 		data = append(data, col.Text())
 	})
-	if len(data) != 7 {
-		return entity.SectionMeeting{}, fmt.Errorf("unexpected section meeting data in %v", data)
+	// TODO: This function shouldn't be so rigid (e.g. sometimes there's an extra <td> at the end for textbook info)
+	if len(data) < 7 {
+		return entity.SectionMeeting{}, fmt.Errorf("unexpected section meeting data in %v (len %d)", data, len(data))
 	}
 
 	return entity.SectionMeeting{
@@ -279,12 +278,22 @@ func parseScheduledMeetingFromTableRow(row *goquery.Selection) (entity.SectionMe
 
 func parseCourseFromCourseInfo(courseInfo string) (entity.Course, error) {
 	info := strings.Split(courseInfo, " - ")
-	if len(info) != 4 {
-		return entity.Course{}, fmt.Errorf("parsed course info has more than 3 hyphens: %s", courseInfo)
+	// The expected length is 4. If the actual length is less, than error out as there's not enough to parse.
+	if len(info) < 4 {
+		return entity.Course{}, fmt.Errorf("not enough information to parse course: %v (len %d)", info, len(info))
+	}
+	// If there are more than the expected number of hyphens, then assume it's due to the course name at the beginning
+	// (e.g. "Varsity Basketball - Men - 2025 - PHED 1013 - A" where "Varsity Basketball - Men" is the course name)
+	if len(info) > 4 {
+		info[0] = strings.Join(info[:len(info)-3], " - ")
+		for i := 1; i < 4; i++ {
+			info[i] = info[len(info)-4+i]
+		}
+		info = info[:4]
 	}
 	return entity.Course{
 		CourseName:    info[len(info)-2],
-		CourseTitle:   strings.Join(info[:len(info)-4], ""),
+		CourseTitle:   strings.Join(info[:len(info)-3], ""),
 		Department:    strings.Split(info[len(info)-2], " ")[0],
 		CourseNumber:  strings.Split(info[len(info)-2], " ")[1],
 		CourseID:      info[len(info)-3],
