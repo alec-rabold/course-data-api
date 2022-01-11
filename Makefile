@@ -1,7 +1,7 @@
 .PHONY: all
 all: clean check generate build 
 
-VERSION := $(shell git rev-parse --short HEAD)$(shell git diff-index --quiet HEAD || echo '-dirty')
+VERSION := $(shell git describe --dirty --tags --always)
 override BUILD_OPTS += -ldflags '-w -X main.Version=$(VERSION)'
 
 BINARY := bin
