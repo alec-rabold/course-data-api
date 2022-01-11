@@ -6,6 +6,10 @@ type Section struct {
 	MeetingTimes []SectionMeeting `json:"meeting_times"`
 }
 
+func (s Section) String() string {
+	return s.CourseSection
+}
+
 // SectionMeeting is the data type for section meeting times
 type SectionMeeting struct {
 	Type         string `json:"type"`
