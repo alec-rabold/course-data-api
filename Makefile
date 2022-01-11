@@ -49,6 +49,10 @@ lint: $(GOLINT)
 vet:
 	go vet ./...
 
+.PHONY: test
+test:
+	go test $(shell go list ./... | grep -v test) -coverprofile cover.out
+
 .PHONY: generate
 generate: $(MOCKERY_GEN)
 	go generate ./...
@@ -56,7 +60,6 @@ generate: $(MOCKERY_GEN)
 .PHONY: build
 build: bin/course-data-api
 
-# TODO: maybe parallelize
 .PHONY: e2e_test
 e2e_test: generate $(GINKGO)
-	$(GINKGO) -v -noColor -timeout=5m ./test/...
+	$(GINKGO) -noColor -nodes=10 -timeout=5m -flakeAttempts=5 ./test/...

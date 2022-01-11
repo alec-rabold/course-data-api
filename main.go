@@ -43,10 +43,7 @@ func newRouter() *router.Router {
 	r := router.NewRouter(apiv1.BasePath)
 
 	// Currently only Ellucian Banner is supported so default to it here
-	client := ellucian.NewClient(crawler.NewCrawler(
-		// TODO: may need to set a phony user agent
-		crawler.WithContentType("application/x-www-form-urlencoded"),
-	))
+	client := ellucian.NewClient(crawler.NewCrawler())
 
 	r.Route(http.MethodGet, apiv1.PathColleges, func(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 		return marshalResponse(client.GetColleges(ctx))
